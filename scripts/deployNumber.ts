@@ -21,4 +21,7 @@ export async function run(provider: NetworkProvider) {
     const numberContract = provider.open(number);
     await numberContract.sendDeploy(sender, toNano('0.05'));
     await provider.waitForDeploy(numberContract.address);
+
+    await numberContract.sendChangeNumber(sender, BigInt(1));
+    await provider.waitForDeploy(numberContract.address);
 }

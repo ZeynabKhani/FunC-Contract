@@ -4,7 +4,8 @@
     "scripts": {
         "start": "blueprint run",
         "build": "blueprint build",
-        "test": "jest --verbose"
+        "test": "jest --verbose",
+        "deploy": "NODE_ENV=testnet npx blueprint run deployNumber --testnet --mnemonic"
     },
     "devDependencies": {
         "@ton/blueprint": "^0.27.0",
