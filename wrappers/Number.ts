@@ -44,11 +44,9 @@ export class Number implements Contract {
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body: beginCell().endCell(),
         });
-
-        await this.changeNumber(provider, via, 1);
     }
 
-    async changeNumber(provider: ContractProvider, via: Sender, new_number: number) {
+    async sendChangeNumber(provider: ContractProvider, via: Sender, new_number: bigint) {
         await provider.internal(via, {
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body: beginCell().storeUint(change_number, 32).storeUint(new_number, 8).endCell(),
@@ -67,15 +65,17 @@ export class Number implements Contract {
 
     static parseEvent(event: Slice) {
         const op = event.loadUint(32);
+        let number = 0;
+
         if (op == change_number_notification) {
-            const eventString = this.hexToAscii(event.loadUint(13 * 8).toString(16)!);
+            const eventString = this.hexToAscii(event.loadUintBig(13 * 8).toString(16)!);
             if (eventString == 'ChangedNumber') {
-                const number = event.loadUint(8);
-                return number;
+                number = event.loadUint(8);
             } else {
                 return console.log('Not a supported event');
             }
         }
+        return { number };
     }
 
     async getNumber(provider: ContractProvider) {

@@ -36,23 +36,28 @@ describe('Number', () => {
             deploy: true,
             success: true,
         });
+    });
 
-        expect(deployResult.transactions).toHaveTransaction({
+    it('should change number', async () => {
+        expect(await number.getNumber()).toEqual(BigInt(0));
+
+        let result = await number.sendChangeNumber(deployer.getSender(), BigInt(1));
+        expect(result.transactions).toHaveTransaction({
             from: deployer.address,
             to: number.address,
             success: true,
             op: change_number,
         });
 
-        expect(deployResult.transactions).toHaveTransaction({
+        expect(result.transactions).toHaveTransaction({
             from: number.address,
             to: deployer.address,
             success: true,
             op: change_number_notification,
         });
-    });
 
-    it('should change number', async () => {
         expect(await number.getNumber()).toEqual(BigInt(1));
+        const event = Number.parseEvent(result.transactions[2].inMessage?.body.asSlice()!);
+        expect(event!.number).toEqual(1);
     });
 });
